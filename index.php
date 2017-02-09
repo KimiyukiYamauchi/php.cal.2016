@@ -1,33 +1,12 @@
 <?php
 
-$tail = '';
-$lastDayOfPrevMonth = new DateTime('last day of previous month');
-while($lastDayOfPrevMonth->format('w') < '6'){
-	$tail = sprintf('<td class="gray">%d</td>',
-							$lastDayOfPrevMonth->format('d')) . $tail;
-	$lastDayOfPrevMonth->sub(new DateInterval('P1D'));
+require_once('Calendar.php');
+
+function h($s) {
+	return htmlspecialchars($s , ENT_QUOTES, 'UTF-8');
 }
 
-$body = '';
-$peroid = new DatePeriod(
-	new DateTime('first day of this month'),
-	new DateInterval('P1D'),
-	new DateTime('first day of next month')
-);
-foreach( $peroid as $day) {
-	if($day->format('w') === '0') { $body .= '</tr><tr>'; }
-	$body .= sprintf('<td class="youbi_%d">%d</td>', 
-											$day->format('w'), $day->format('d'));
-}
-
-$head = '';
-$firstDayOfNextMonth = new DateTime('first day of next month');
-while($firstDayOfNextMonth->format('w') > 0){
-	$head .= sprintf('<td class="gray">%d</td>',
-							$firstDayOfNextMonth->format('d')); 
-	$firstDayOfNextMonth->add(new DateInterval('P1D'));
-}
-
+$cal = new \MyApp\Calendar();
 
 ?>
 <!DOCTYPE html>
@@ -41,9 +20,9 @@ while($firstDayOfNextMonth->format('w') > 0){
 
 	<table>
 		<thead>
-			<th><a href="">&laquo;</a></th>
-			<th colspan="5">February 2017</th>
-			<th><a href="">&raquo;</a></th>
+		<th><a href="index.php?t=<?= h($cal->prev) ?>">&laquo;</a></th>
+			<th colspan="5"><?= h($cal->yearMonth) ?></th>
+			<th><a href="index.php?t=<?= h($cal->next) ?>">&raquo;</a></th>
 		</thead>
 		<tbody>
 			<tr>
@@ -55,30 +34,10 @@ while($firstDayOfNextMonth->format('w') > 0){
 				<td>Fri</td>
 				<td>Sat</td>
 			</tr>
-			<tr>
-				<?php echo $tail . $body . $head; ?>
-<!--
-				<td class="youbi_0">1</td>
-				<td class="youbi_1">2</td>
-				<td class="youbi_2">3</td>
-				<td class="youbi_3 today">4</td>
-				<td class="youbi_4">5</td>
-				<td class="youbi_5">6</td>
-				<td class="youbi_6">7</td>
-			</tr>
-			<tr>
-				<td class="youbi_0">30</td>
-				<td class="youbi_1">31</td>
-				<td class="gray">1</td>
-				<td class="gray">2</td>
-				<td class="gray">3</td>
-				<td class="gray">4</td>
-				<td class="gray">5</td>
--->
-			</tr>
+			<?php $cal->show(); ?>
 		</tbody>
 		<tfoot>
-			<th colspan="7"><a href="">Today</a></th>
+			<th colspan="7"><a href="index.php">Today</a></th>
 		</tfoot>
 	</table>
 	
